@@ -20,7 +20,11 @@ const mongoose = require("mongoose")
     })
     //Public
     app.use(express.static(path.join(__dirname,'public')))
-    
+    //Middleware
+    app.use((req,res,next) => {
+        console.log("Middleware on")
+        next()
+    })
 //routes
 app.use('/admin',admin)
 //others
