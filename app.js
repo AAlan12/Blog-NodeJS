@@ -1,8 +1,8 @@
-const express = require("express")
-const handlebars = require("express-handlebars")
+const express = require('express')
+const handlebars = require('express-handlebars')
 const app = express()
-const admin = require("./routes/admin")
-const path = require("path")
+const admin = require('./routes/admin')
+const path = require('path')
 // const mongoose = require("mongoose")
 
 //config
@@ -14,14 +14,12 @@ const path = require("path")
     app.set('view engine', 'handlebars');
     //Mongoose
     //Public
-    // app.use(express.static(path.join(__dirname,"public")))
-    // app.use(express.static(path.join( 'public/css')))
-    // app.use(express.static(path.join(__dirname + "/public")))
-    app.use(express.static(__dirname + '/public'))
+    app.use(express.static(path.join(__dirname,'public')))
+    
 //routes
 app.use('/admin',admin)
 //others
 const PORT = 4001
 app.listen(PORT, () => {
-    console.log("Server is running")
+    console.log('Server is running')
 })
