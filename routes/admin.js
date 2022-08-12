@@ -1,4 +1,5 @@
 const express = require("express")
+const { unregisterDecorator } = require("handlebars")
 const router = express.Router()
 const mongoose = require("mongoose")
 require("../models/Category")
@@ -21,14 +22,31 @@ router.get('/categories/add', (req,res) => {
 })
 
 router.post('/categories/new', (req,res) => {
-    const newCategory = {
-        name: req.body.name,
-        slug: req.body.slug
+    
+    let error = []
+    if(!req.body.name || typeof req.body.name == undefined || req.body.name == null){
+        error.push({text: "invalid name"})
     }
-    new Category(newCategory).save().then(()=>{
-        console.log("Category saved successfully")
-    }).catch((err) => {
-        console.log("Error trying to save category: "+err)
-    })
+    if(!req.body.slug || typeof req.body.slug == undefined || req.body.slug == null){
+        error.push({text: "invalid slug"})
+    }
+    if(req.body.name.length < 2){
+        error.push({text: "category name is too small"})
+    }
+    if(error.length > 0){
+        res.render("admin/addCategories", {error: error})
+    }else{
+        const newCategory = {
+            name: req.body.name,
+            slug: req.body.slug
+        }
+        new Category(newCategory).save().then(()=>{
+            req.flash("success_msg", "Category created successfully")
+            res.redirect("/admin/categories")
+        }).catch((err) => {
+            req.flash("error_msg", "There was an error trying to save the category, please try again")
+            res.redirect("/admin")
+        })
+    } 
 })
 module.exports = router
