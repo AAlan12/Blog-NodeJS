@@ -55,4 +55,28 @@ router.post('/categories/new', (req,res) => {
         })
     } 
 })
+
+router.get("/categories/edit/:id",(req,res) =>{
+    Category.findOne({_id:req.params.id}).lean().then((category) =>{
+        res.render("admin/editCategories", {category: category})
+    }).catch((err) => {
+        req.flash("error_msg", "This category does not exist")
+        res.redirect("/admin/categories")
+    })
+})
+
+router.post("/categories/edit", (req,res) => {
+    Category.findOne({_id: req.body.id}).then((category) => {
+        category.name = req.body.name
+        category.slug = req.body.slug
+
+        category.save().then(() => {
+            req.flash("success_msg", "Category edited successfully")
+            res.redirect("/admin/categories")
+        })
+    }).catch((err) => {
+        req.flash("error_msg", "There was an error editing the category")
+        res.redirect("/admin/categories")
+    })
+})
 module.exports = router
