@@ -67,13 +67,37 @@ router.get("/categories/edit/:id",(req,res) =>{
 
 router.post("/categories/edit", (req,res) => {
     Category.findOne({_id: req.body.id}).then((category) => {
+        
+    let error = []
+
+    if(!req.body.name || typeof req.body.name == undefined || req.body.name == null){
+        error.push({text: "invalid name"})
+    }
+    if(!req.body.slug || typeof req.body.slug == undefined || req.body.slug == null){
+        error.push({text: "invalid slug"})
+    }
+    if(req.body.name.length < 2){
+        error.push({text: "category name is too small"})
+    }
+    if(error.length > 0){
+        Category.findOne({_id: req.body.id}).lean().then((category) => {
+            res.render("admin/editCategories", {category: category, error: error})
+        }).catch((err) => {
+            req.flash("error_msg", "Error getting data")
+            res.redirect("admin/categories")
+        })   
+    }else{
         category.name = req.body.name
         category.slug = req.body.slug
 
         category.save().then(() => {
             req.flash("success_msg", "Category edited successfully")
             res.redirect("/admin/categories")
+        }).catch((err) => {
+            req.flash("error_msg", "There was an error saving the category")
+            res.redirect("admin/categories")
         })
+    }       
     }).catch((err) => {
         req.flash("error_msg", "There was an error editing the category")
         res.redirect("/admin/categories")
