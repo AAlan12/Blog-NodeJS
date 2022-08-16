@@ -103,7 +103,7 @@ router.post("/categories/edit", (req,res) => {
 })
 
 router.post("/categories/delete", (req,res) => {
-    Category.remove({_id: req.body.id}).then(() => {
+    Category.deleteOne({_id: req.body.id}).then(() => {
         req.flash("success_msg", "Category deleted successfully")
         res.redirect("/admin/categories")
     }).catch((err) => {
@@ -155,5 +155,51 @@ router.post("/posts/new", (req,res) => {
             res.redirect("/admin/posts")
         })
     }
+})
+
+router.get("/posts/edit/:id", (req,res) => {
+    Post.findOne({_id: req.params.id}).lean().then((post) => {
+        Category.find().lean().then((categories) => {
+            res.render("admin/editPosts", {categories: categories, post: post})
+        }).catch((err) => {
+            req.flash("erro_msg", "There was an error listing the categories")
+            res.redirect("/admin/posts")
+        })
+    }).catch((err) => {
+        req.flash("error_msg", "There was an error loading the form")
+        res.redirect("/admin/posts")
+    })
+})
+
+router.post("/posts/edit", (req,res) => {
+    Post.findOne({_id: req.body.id}).then((post) => {
+        
+        post.title = req.body.title
+        post.slug = req.body.slug
+        post.description = req.body.description
+        post.content = req.body.content
+        post.category = req.body.category
+
+        post.save().then(() => {
+            req.flash("success_msg", "Post edited successfully")
+            res.redirect("/admin/posts")
+        }).catch((err) => {
+            req.flash("error_msg", "Internal error")
+            res.redirect("/admin/posts")
+        })
+    }).catch((err) => {
+        req.flash("error_msg", "There was an error saving post edit")
+        res.redirect("/admin/posts")
+    })
+})
+
+router.post("/posts/delete", (req,res) => {
+    Post.deleteOne({_id: req.body.id}).then(() => {
+        req.flash("success_msg", "Post deleted successfully")
+        res.redirect("/admin/posts")
+    }).catch((err) => {
+        req.flash("error_msg", "There was an error trying to delete the post")
+        res.redirect("/admin/posts")
+    })
 })
 module.exports = router

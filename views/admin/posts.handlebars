@@ -8,8 +8,12 @@
             <h4>{{title}}</h4>
             <p>Description: {{description}}</p>
             <small>Category: {{category.name}}</small><br>
-            <small>Date: {{date}}</small>
-            
+            <small>Date: {{date}}</small><br>
+            <a href="/admin/posts/edit/{{_id}}"><button class="btn btn-success mt-3">Edit post</button></a>
+            <form action="/admin/posts/delete" method="POST">
+                <input type="hidden" name="id" value="{{_id}}">
+                <button type="submit" class="btn btn-danger mt-3">Delete post</button>
+            </form>         
         </div>
     </div>
 {{else}}
