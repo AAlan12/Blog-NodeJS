@@ -1,8 +1,8 @@
 <div class="jumbotron">
   <h1 class="display-4">Welcome to node blog</h1>
-  <p class="lead">This is a simple hero unit, a simple jumbotron-style component for calling extra attention to featured content or information.</p>
+  <p class="lead">This is a simple blog powered by Node JS + Express + MongoDB</p>
   <hr class="my-4">
-  <p>It uses utility classes for typography and spacing to space content out within the larger container.</p>
+  <p>Here you can read more about the latest technology news .</p>
   <p class="lead">
     <a class="btn btn-primary btn-lg" href="#" role="button">Create an account</a>
   </p>
@@ -11,11 +11,16 @@
 <hr>
 
 <h2>Recent posts</h2>
+
 {{#each posts}}
-<div class="card">
-    <div class="card-body">
+<div class="card mt-4">
+    <div class="card-body">    
         <h3>{{title}}</h3>
         <p>{{description}}</p>
+        <a href="/post/{{slug}}"><button class="btn btn-info">Read more</button></a>
+        <hr>
+        <small>Category: {{category.name}}</small><br>
+        <small>Publication date: {{date}}</small>
     </div>
 </div>
 {{else}}
