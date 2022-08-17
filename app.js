@@ -8,6 +8,8 @@ const session = require('express-session')
 const flash = require('connect-flash')
 require("./models/Post")
 const Post = mongoose.model("posts")
+require("./models/Category")
+const Category = mongoose.model("categories")
 
 //config
     //Session
@@ -54,6 +56,33 @@ app.get("/post/:slug", (req,res) => {
             res.render("post/index", {post:post})
         }else{
             req.flash("error_msg", "This post does not exist")
+            res.redirect("/")
+        }
+    }).catch((err) => {
+        req.flash("error_msg", "There was an internal error")
+        res.redirect("/")
+    })
+})
+app.get("/categories", (req,res) => {
+    Category.find().lean().then((categories) => {
+        res.render("categories/index", {categories:categories})
+    }).catch((err) => {
+        req.flash("error_msg", "There was an internal error while listing categories")
+        res.redirect("/")
+    })
+})
+app.get("/categories/:slug", (req,res) => {
+    Category.findOne({slug: req.params.slug}).lean().then((category) => {
+        if(category){
+            Post.find({category: category._id}).lean().then((posts) => {
+                res.render("categories/posts", {posts: posts, category:category})
+            }).catch((err) => {
+                req.flash("error_msg", "There was an internal error when listing the posts")
+                res.redirect("/")
+            })
+            
+        }else{
+            req.flash("error_msg", "This category does not exist")
             res.redirect("/")
         }
     }).catch((err) => {
