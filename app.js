@@ -10,6 +10,7 @@ require("./models/Post")
 const Post = mongoose.model("posts")
 require("./models/Category")
 const Category = mongoose.model("categories")
+const users = require("./routes/user")
 
 //config
     //Session
@@ -94,6 +95,7 @@ app.get("/404", (req, res) => {
     res.send("error 404")
 })
 app.use('/admin',admin)
+app.use('/users', users)
 //others
 const PORT = 4001
 app.listen(PORT, () => {
