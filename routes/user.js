@@ -3,6 +3,7 @@ const router = express.Router()
 const mongoose = require("mongoose")
 require("../models/User")
 const User = mongoose.model("users")
+const bcrypt = require("bcryptjs")
 
 router.get("/record", (req, res) => {
     res.render("users/record")
@@ -29,7 +30,37 @@ router.post("/record", (req,res) => {
     if(error.length > 0){
         res.render("users/record", {error: error})
     }else{
-        
+        User.findOne({email: req.body.email}).lean().then((user) => {
+            if(user){
+                req.flash("error_msg", "An account with this email already exists in our system")
+                res.redirect("/users/record")
+            }else{
+                const newUser = User({
+                    name: req.body.name,
+                    email: req.body.email,
+                    password: req.body.password
+                })
+                bcrypt.genSalt(10, (erro, salt) => {
+                    bcrypt.hash(newUser.password,salt, (erro, hash) => {
+                        if(erro){
+                            req.flash("error_msg", "There was an error saving the user")
+                            res.redirect("/")
+                        }
+                        newUser.password = hash
+                        newUser.save().then(() =>{
+                            req.flash("success_msg", "User created successfully")
+                            res.redirect("/")
+                        }).catch((err) => {
+                            req.flash("error_msg", "There was an error creating the user")
+                            res.redirect("/users/record")
+                        })
+                    })
+                })
+            }
+        }).catch((err) => {
+            req.flash("error_msg", "There was an internal error")
+            res.redirect("/")
+        })
     }
 })
 
